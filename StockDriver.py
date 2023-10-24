@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from StockService import StockService
+import datetime
 
 #get the Ticker Symbol
 def getTik():
@@ -36,11 +37,24 @@ def getTimeSeries():
 
 def getStartDate():
     print("Enter the Start Date (YYYY-MM-DD)")
-    return input()
+    dStr = input()
+    d = x = datetime.datetime(int(dStr[0:4]), int(dStr[5:7]), int(dStr[8:10]))
+    return d
 
 def getEndDate():
     print("Enter the End Date (YYYY-MM-DD)")
-    return input()
+    dStr = input()
+    d = x = datetime.datetime(int(dStr[0:4]), int(dStr[5:7]), int(dStr[8:10]))
+    return d
+
+
+def checkDates(sd, ed):
+    if sd > ed:
+        print("End Date must be after Start Date")
+        return False
+    else:
+        return True
+
 
 def goAgain():
     print("Would you like to view more stock Data?(y/n):")
@@ -49,6 +63,8 @@ def goAgain():
         return True
     else:
         return False
+    
+
 
 def getStockData(service: StockService, ticker: str, time_series: int):
     if time_series == 1:
@@ -73,8 +89,11 @@ def main():
         ticker = getTik()
         chartType = getChartType()
         timeSeries = getTimeSeries()
-        startDate = getStartDate()
-        endDate = getEndDate()
+        validDates = False
+        while(validDates == False):
+            startDate = getStartDate()
+            endDate = getEndDate()
+            validDates = checkDates(startDate, endDate)
 
         # get stock data from api
         stockData = getStockData(serv, ticker, timeSeries)
