@@ -1,7 +1,11 @@
+import datetime
 import os
 from dotenv import load_dotenv
+
 from StockService import StockService
-import datetime
+from Models import Stock, TimeSeries
+from StockExceptions import StockQueryException, StockQueryLimitException, StockEndpointException
+
 
 #get the Ticker Symbol
 def getTik():
@@ -67,14 +71,18 @@ def goAgain():
 
 
 def getStockData(service: StockService, ticker: str, time_series: int, start_date: datetime, end_date: datetime):
-    if time_series == 1:
-        return service.get_intraday(ticker, start_date, end_date)
-    elif time_series == 2:
-        return service.get_daily(ticker, start_date, end_date)
-    elif time_series == 3:
-        return service.get_weekly(ticker, start_date, end_date)
-    elif time_series == 4:
-        return service.get_monthly(ticker, start_date, end_date)
+    try:
+        if time_series == 1:
+            return service.get_intraday(ticker, start_date, end_date)
+        elif time_series == 2:
+            return service.get_daily(ticker, start_date, end_date)
+        elif time_series == 3:
+            return service.get_weekly(ticker, start_date, end_date)
+        elif time_series == 4:
+            return service.get_monthly(ticker, start_date, end_date)
+    except Exception as e:
+        print(e)
+        return None
 
 
 def main():

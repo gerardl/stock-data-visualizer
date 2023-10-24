@@ -6,6 +6,10 @@ from StockExceptions import StockQueryException, StockQueryLimitException, Stock
 
 class StockService:
     BASE_URL = "https://www.alphavantage.co/query"
+    INTRA_TYPE = "TIME_SERIES_INTRADAY"
+    DAILY_TYPE = "TIME_SERIES_DAILY"
+    WEEKLY_TYPE = "TIME_SERIES_WEEKLY"
+    MONTHLY_TYPE = "TIME_SERIES_MONTHLY"
 
     def __init__(self, api_key):
         self.api_key = api_key
@@ -53,13 +57,6 @@ class StockService:
             raise StockQueryException("API returned an unexpected response.")
 
     def __get_months_between(self, start_date: datetime, end_date: datetime):
-        """
-        Get all the months between the start date and end date.
-
-        :param start_date: The start date as a datetime object.
-        :param end_date: The end date as a datetime object.
-        :return: A list of the first day of each month between the start and end dates, inclusive.
-        """
         # Ensure the start_date is less than or equal to the end_date
         if start_date > end_date:
             raise ValueError("The start date must be before or the same as the end date")
@@ -82,22 +79,23 @@ class StockService:
         months = self.__get_months_between(start_date, end_date)
         series_data = []
         for month in months:
-            res = self.__query_api("TIME_SERIES_INTRADAY", symbol, {"outputsize": "full", "month": month.strftime('%Y-%m'), "interval": "60min"})
+            # TODO: decide what interval we want to use for intraday
+            res = self.__query_api(self.INTRA_TYPE, symbol, {"outputsize": "full", "month": month.strftime('%Y-%m'), "interval": "60min"})
             series_data += self.__create_series_data(symbol, res, 'Time Series (60min)')
 
-        return TimeSeries(symbol, "TIME_SERIES_INTRADAY", start_date, end_date, series_data)
+        return TimeSeries(symbol, self.INTRA_TYPE, start_date, end_date, series_data)
 
     def get_daily(self, symbol: str, start_date: datetime, end_date: datetime) -> TimeSeries:
-        res = self.__query_api("TIME_SERIES_DAILY", symbol, {"outputsize": "full"})
+        res = self.__query_api(self.DAILY_TYPE, symbol, {"outputsize": "full"})
         series_data = self.__create_series_data(symbol, res, 'Time Series (Daily)')
-        return TimeSeries(symbol, "TIME_SERIES_DAILY", start_date, end_date, series_data)
+        return TimeSeries(symbol, self.DAILY_TYPE, start_date, end_date, series_data)
     
     def get_weekly(self, symbol: str, start_date: datetime, end_date: datetime) -> TimeSeries:
-        res = self.__query_api("TIME_SERIES_WEEKLY", symbol)
+        res = self.__query_api(self.WEEKLY_TYPE, symbol)
         series_data = self.__create_series_data(symbol, res, 'Weekly Time Series')
-        return TimeSeries(symbol, "TIME_SERIES_WEEKLY", start_date, end_date, series_data)
+        return TimeSeries(symbol, self.WEEKLY_TYPE, start_date, end_date, series_data)
     
     def get_monthly(self, symbol: str, start_date: datetime, end_date: datetime) -> TimeSeries:
-        res = self.__query_api("TIME_SERIES_MONTHLY", symbol)
+        res = self.__query_api(self.MONTHLY_TYPE, symbol)
         series_data = self.__create_series_data(symbol, res, 'Monthly Time Series')
-        return TimeSeries(symbol, "TIME_SERIES_MONTHLY", start_date, end_date, series_data)
+        return TimeSeries(symbol, self.MONTHLY_TYPE, start_date, end_date, series_data)

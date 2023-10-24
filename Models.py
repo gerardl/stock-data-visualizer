@@ -11,10 +11,10 @@ class Stock:
         self.volume = volume
 
 class TimeSeries:
-    def __init__(self, symbol):
-        self.symbol = symbol
-        self.series = []
-
+    '''
+    A TimeSeries instance represents a series of stock data for a given stock symbol over a given date range.
+    Series data will be filtered to only include data within the specified date range.
+    '''
     def __init__(self, symbol: str, series_type: str, start_date: datetime, end_date: datetime, series: list):
         self.symbol = symbol
         self.series_type = series_type
