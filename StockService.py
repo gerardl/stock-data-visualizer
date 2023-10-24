@@ -31,7 +31,7 @@ class StockService:
         if 'Error Message' in response.text:
             raise StockQueryException("API was accessible but returned an error message. Did you enter a valid stock symbol?")
         # check for api limit reached
-        if 'Note' in response.text:
+        if 'Thank you for using' in response.text:
             raise StockQueryLimitException()
         return response.json()
 

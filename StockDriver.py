@@ -98,9 +98,9 @@ def main():
     load_dotenv()
     serv = StockService(os.getenv("API_KEY"))
 
-    # Uncomment to test service without user input
+    # Temp: Uncomment to test service without user input
     #temp_data = getStockData(serv, "AAPL", 2, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 12, 31))
-    temp_intra = getStockData(serv, "AAPL", 1, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 2, 28))
+    #temp_intra = getStockData(serv, "AAPL", 1, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 9, 28))
     #temp_week = getStockData(serv, "AAPL", 3, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 12, 31))
     #temp_month = getStockData(serv, "AAPL", 4, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 12, 31))
 
