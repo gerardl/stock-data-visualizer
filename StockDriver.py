@@ -66,15 +66,15 @@ def goAgain():
     
 
 
-def getStockData(service: StockService, ticker: str, time_series: int):
+def getStockData(service: StockService, ticker: str, time_series: int, start_date: datetime, end_date: datetime):
     if time_series == 1:
-        return service.get_intraday(ticker)
+        return service.get_intraday(ticker, start_date, end_date)
     elif time_series == 2:
-        return service.get_daily(ticker)
+        return service.get_daily(ticker, start_date, end_date)
     elif time_series == 3:
-        return service.get_weekly(ticker)
+        return service.get_weekly(ticker, start_date, end_date)
     elif time_series == 4:
-        return service.get_monthly(ticker)
+        return service.get_monthly(ticker, start_date, end_date)
 
 
 def main():
@@ -82,8 +82,10 @@ def main():
     serv = StockService(os.getenv("API_KEY"))
 
     # Uncomment to test service without user input
-    # temp_data = getStockData(serv, "AAPL", 2)
-    # temp_filtered = temp_data.filter_date_range("2020-01-01", "2020-01-31")
+    #temp_data = getStockData(serv, "AAPL", 2, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 12, 31))
+    temp_intra = getStockData(serv, "AAPL", 1, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 2, 28))
+    #temp_week = getStockData(serv, "AAPL", 3, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 12, 31))
+    #temp_month = getStockData(serv, "AAPL", 4, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 12, 31))
 
     while True:
         ticker = getTik()
@@ -97,10 +99,7 @@ def main():
 
         # get stock data from api
         stockData = getStockData(serv, ticker, timeSeries)
-        # filter to specified date range
-        # TODO: intra day filter is different than the others and needs some work
-        filteredData = stockData.filter_date_range(startDate, endDate)
-
+        
         if goAgain() == False:
             break
 
