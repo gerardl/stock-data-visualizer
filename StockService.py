@@ -20,28 +20,33 @@ class StockService:
         response = requests.get(url)
         # ensure the request was successful
         if response.status_code != 200:
-            raise StockQueryException("TODO: Add useful message here")
+            raise StockQueryException("API returned an http error. Add detail to this message?")
         # check for json errors / no response?
+        if 'Error Message' in response.text:
+            raise StockQueryException("API was accessible but returned an error message. Did you enter a valid stock symbol?")
         return response.json()
 
     def __create_time_series(self, symbol: str, json_response, items_label: str) -> TimeSeries:
         """
         Create a TimeSeries instance from the JSON response from the API.
         """
-        time_series = TimeSeries(symbol)
-        for date, daily_data in json_response[items_label].items():
-            stock_data = Stock(
-                symbol=symbol,
-                date=date,
-                open=float(daily_data['1. open']),
-                high=float(daily_data['2. high']),
-                low=float(daily_data['3. low']),
-                close=float(daily_data['4. close']),
-                volume=int(daily_data['5. volume']),
-            )
-            time_series.add(stock_data)
+        try:
+            time_series = TimeSeries(symbol)
+            for date, daily_data in json_response[items_label].items():
+                stock_data = Stock(
+                    symbol=symbol,
+                    date=date,
+                    open=float(daily_data['1. open']),
+                    high=float(daily_data['2. high']),
+                    low=float(daily_data['3. low']),
+                    close=float(daily_data['4. close']),
+                    volume=int(daily_data['5. volume']),
+                )
+                time_series.add(stock_data)
 
-        return time_series
+            return time_series
+        except KeyError:
+            raise StockQueryException("API returned an unexpected response.")
 
     def get_intraday(self, symbol: str) -> TimeSeries:
         res = self.__query_api("TIME_SERIES_INTRADAY", symbol)

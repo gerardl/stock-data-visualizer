@@ -65,9 +65,9 @@ def main():
     load_dotenv()
     serv = StockService(os.getenv("API_KEY"))
 
-    # temp for testing
-    temp_data = getStockData(serv, "AAPL", 2)
-    temp_filtered = temp_data.filter_date_range("2020-01-01", "2020-01-31")
+    # Uncomment to test service without user input
+    # temp_data = getStockData(serv, "AAPL", 2)
+    # temp_filtered = temp_data.filter_date_range("2020-01-01", "2020-01-31")
 
     while True:
         ticker = getTik()
@@ -84,5 +84,6 @@ def main():
 
         if goAgain() == False:
             break
-        
-main()
+
+if __name__ == "__main__":     
+    main()
