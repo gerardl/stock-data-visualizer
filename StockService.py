@@ -26,10 +26,10 @@ class StockService:
         response = requests.get(self.BASE_URL, params=params)
         # ensure the request was successful
         if response.status_code != 200:
-            raise StockEndpointException("API returned an http error. Add detail to this message?")
+            raise StockEndpointException(response.text)
         # check for json errors / no response?
         if 'Error Message' in response.text:
-            raise StockQueryException("API was accessible but returned an error message. Did you enter a valid stock symbol?")
+            raise StockQueryException(response.text)
         # check for api limit reached
         if 'Thank you for using' in response.text:
             raise StockQueryLimitException()
