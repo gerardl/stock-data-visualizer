@@ -1,5 +1,4 @@
 import requests
-import json
 # local imports
 from Models import Stock, TimeSeries
 from StockExceptions import StockQueryException
@@ -23,7 +22,7 @@ class StockService:
         # check for json errors / no response?
         return response.json()
 
-    def __create_time_series(self, symbol, json_response, items_label):
+    def __create_time_series(self, symbol: str, json_response, items_label) -> TimeSeries:
         """
         Create a TimeSeries instance from the JSON response from the API.
         """
@@ -42,22 +41,22 @@ class StockService:
 
         return time_series
 
-    def get_intraday(self, symbol):
+    def get_intraday(self, symbol: str) -> TimeSeries:
         res = self.__query_api("TIME_SERIES_INTRADAY", symbol)
         time_series = self.__create_time_series(symbol, res, 'Time Series (5min)')
         return time_series
         
-    def get_daily(self, symbol):
+    def get_daily(self, symbol: str) -> TimeSeries:
         res = self.__query_api("TIME_SERIES_DAILY", symbol)
         time_series = self.__create_time_series(symbol, res, 'Time Series (Daily)')
         return time_series
     
-    def get_weekly(self, symbol):
+    def get_weekly(self, symbol: str) -> TimeSeries:
         res = self.__query_api("TIME_SERIES_WEEKLY", symbol)
         time_series = self.__create_time_series(symbol, res, 'Weekly Time Series')
         return time_series
     
-    def get_monthly(self, symbol):
+    def get_monthly(self, symbol: str) -> TimeSeries:
         res = self.__query_api("TIME_SERIES_MONTHLY", symbol)
         time_series = self.__create_time_series(symbol, res, 'Monthly Time Series')
         return time_series
