@@ -82,7 +82,7 @@ class StockService:
         months = self.__get_months_between(start_date, end_date)
         series_data = []
         for month in months:
-            res = self.__query_api("TIME_SERIES_INTRADAY", symbol, {"outputsize": "full", "date": month.strftime('%Y-%m-%d'), "interval": "60min"})
+            res = self.__query_api("TIME_SERIES_INTRADAY", symbol, {"outputsize": "full", "month": month.strftime('%Y-%m'), "interval": "60min"})
             series_data += self.__create_series_data(symbol, res, 'Time Series (60min)')
 
         return TimeSeries(symbol, "TIME_SERIES_INTRADAY", start_date, end_date, series_data)

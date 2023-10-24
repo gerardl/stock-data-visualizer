@@ -22,20 +22,18 @@ class TimeSeries:
         self.end_date = end_date
         self.series = self.__filter_date_range(series)
 
-    def __str_to_datetime(self, date_str: str) -> datetime:
-        try:
-            # Try to parse string as datetime
-            return datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
-        except ValueError:
-            # If parsing as datetime fails, try parsing as date
-            return datetime.strptime(date_str, '%Y-%m-%d')
-
     def __filter_date_range(self, series: list):
         """
         Filter the time series to only include stock data within the specified date range.
         :return: A list of Stock instances within the specified date range.
         """
-        filtered_series = [data for data in series if self.start_date <= self.__str_to_datetime(data.date) <= self.end_date]
+
+        # find the date format of the series
+        date_format = '%Y-%m-%d'
+        if len(series) > 0:
+            date_format = '%Y-%m-%d %H:%M:%S' if ' ' in series[0].date else '%Y-%m-%d'
+
+        filtered_series = [data for data in series if self.start_date <= datetime.strptime(data.date, date_format) <= self.end_date]
         return filtered_series
 
     
