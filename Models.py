@@ -11,28 +11,29 @@ class Stock:
         self.volume = volume
 
 class TimeSeries:
-    def __init__(self, symbol):
+    '''
+    A TimeSeries instance represents a series of stock data for a given stock symbol over a given date range.
+    Series data will be filtered to only include data within the specified date range.
+    '''
+    def __init__(self, symbol: str, series_type: str, start_date: datetime, end_date: datetime, series: list):
         self.symbol = symbol
-        self.series = []
+        self.series_type = series_type
+        self.start_date = start_date
+        self.end_date = end_date
+        self.series = self.__filter_date_range(series)
 
-    def add(self, stock_data):
-        self.series.append(stock_data)
-
-    def filter_date_range(self, start_date, end_date):
+    def __filter_date_range(self, series: list):
         """
-        Filter the time series to only include stock data within a certain date range.
-
-        :param start_date: The start date in 'YYYY-MM-DD' string format.
-        :param end_date: The end date in 'YYYY-MM-DD' string format.
+        Filter the time series to only include stock data within the specified date range.
         :return: A list of Stock instances within the specified date range.
         """
-        # Convert date strings to datetime objects for comparison
-        start_date = datetime.strptime(start_date, '%Y-%m-%d')
-        end_date = datetime.strptime(end_date, '%Y-%m-%d')
 
-        # Filter the series list to include only items within the specified range
-        filtered_series = [data for data in self.series if start_date <= datetime.strptime(data.date, '%Y-%m-%d') <= end_date]
-        
+        # find the date format of the series
+        date_format = '%Y-%m-%d'
+        if len(series) > 0:
+            date_format = '%Y-%m-%d %H:%M:%S' if ' ' in series[0].date else '%Y-%m-%d'
+
+        filtered_series = [data for data in series if self.start_date <= datetime.strptime(data.date, date_format) <= self.end_date]
         return filtered_series
 
     

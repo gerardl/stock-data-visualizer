@@ -1,7 +1,11 @@
+import datetime
 import os
 from dotenv import load_dotenv
+
 from StockService import StockService
-import datetime
+from Models import Stock, TimeSeries
+from StockExceptions import StockQueryException, StockQueryLimitException, StockEndpointException
+
 
 #get the Ticker Symbol
 def getTik():
@@ -66,24 +70,39 @@ def goAgain():
     
 
 
-def getStockData(service: StockService, ticker: str, time_series: int):
-    if time_series == 1:
-        return service.get_intraday(ticker)
-    elif time_series == 2:
-        return service.get_daily(ticker)
-    elif time_series == 3:
-        return service.get_weekly(ticker)
-    elif time_series == 4:
-        return service.get_monthly(ticker)
+def getStockData(service: StockService, ticker: str, time_series: int, start_date: datetime, end_date: datetime):
+    try:
+        if time_series == 1:
+            return service.get_intraday(ticker, start_date, end_date)
+        elif time_series == 2:
+            return service.get_daily(ticker, start_date, end_date)
+        elif time_series == 3:
+            return service.get_weekly(ticker, start_date, end_date)
+        elif time_series == 4:
+            return service.get_monthly(ticker, start_date, end_date)
+    except StockQueryLimitException as e:
+        print("Sorry, but it looks like the supplied API key is over it's access limit. If you are using the intraday function, limit your date range to 5 months or less. Otherwise, please try again later.")
+        return None
+    except StockQueryException as e:
+        print(f"Sorry, but there was an error with your query. Make sure you are using a valid stock symbol and try again. \nAdditional details:{e.message}")
+        return None
+    except StockEndpointException as e:
+        print(f"Sorry, but there was an error with the API endpoint. Please try again later. \nAdditional details: {e.message}")
+        return None
+    except Exception as e:
+        print(f"Sorry, but there was an unexpected error. Please try again later. \nAdditional details: {e.message}")
+        return None
 
 
 def main():
     load_dotenv()
     serv = StockService(os.getenv("API_KEY"))
 
-    # Uncomment to test service without user input
-    # temp_data = getStockData(serv, "AAPL", 2)
-    # temp_filtered = temp_data.filter_date_range("2020-01-01", "2020-01-31")
+    # Temp: Uncomment to test service without user input
+    #temp_data = getStockData(serv, "AAPL", 2, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 12, 31))
+    #temp_intra = getStockData(serv, "AAPL", 1, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 9, 28))
+    #temp_week = getStockData(serv, "AAPL", 3, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 12, 31))
+    #temp_month = getStockData(serv, "AAPL", 4, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 12, 31))
 
     while True:
         ticker = getTik()
@@ -97,10 +116,11 @@ def main():
 
         # get stock data from api
         stockData = getStockData(serv, ticker, timeSeries)
-        # filter to specified date range
-        # TODO: intra day filter is different than the others and needs some work
-        filteredData = stockData.filter_date_range(startDate, endDate)
-
+        # check if stock data was returned, otherwise an error occurred,
+        # was printed, and we should continue to the next iteration or exit
+        if stockData == None:
+            continue
+        
         if goAgain() == False:
             break
 
