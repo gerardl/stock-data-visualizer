@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 from StockService import StockService
 
 #get the Ticker Symbol
@@ -48,13 +50,21 @@ def goAgain():
     else:
         return False
 
+def getStockData(service: StockService, ticker: str, time_series: int):
+    if time_series == 1:
+        return service.get_intraday(ticker)
+    elif time_series == 2:
+        return service.get_daily(ticker)
+    elif time_series == 3:
+        return service.get_weekly(ticker)
+    elif time_series == 4:
+        return service.get_monthly(ticker)
+
+
 def main():
-    
-    #temp
-    ticker = "MSFT"
-    serv = StockService("demo")
-    result = serv.get_daily_data(ticker)
-    print(result)
+    load_dotenv()
+    API_KEY = os.getenv("API_KEY")
+    serv = StockService(API_KEY)
 
     while True:
         ticker = getTik()
@@ -62,10 +72,13 @@ def main():
         timeSeries = getTimeSeries()
         startDate = getStartDate()
         endDate = getEndDate()
+
+        # get stock data from api
+        stockData = getStockData(serv, ticker, timeSeries)
+        # filter to specified date range
+        filteredData = stockData.filter_date_range(startDate, endDate)
+
         if goAgain() == False:
             break
         
-
-
-
 main()

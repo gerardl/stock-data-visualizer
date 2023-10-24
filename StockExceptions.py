@@ -1,3 +1,5 @@
+# Add custom exceptions here
+
 class StockQueryException(Exception):
     def __init__(self, msg):
         self.message = msg
