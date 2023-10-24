@@ -81,16 +81,16 @@ def getStockData(service: StockService, ticker: str, time_series: int, start_dat
         elif time_series == 4:
             return service.get_monthly(ticker, start_date, end_date)
     except StockQueryLimitException as e:
-        print(e)
+        print("Sorry, but it looks like the supplied API key is over it's access limit. If you are using the intraday function, limit your date range to 5 months or less. Otherwise, please try again later.")
         return None
     except StockQueryException as e:
-        print(e)
+        print(f"Sorry, but there was an error with your query. Make sure you are using a valid stock symbol and try again. \nAdditional details:{e.message}")
         return None
     except StockEndpointException as e:
-        print(e)
+        print(f"Sorry, but there was an error with the API endpoint. Please try again later. \nAdditional details: {e.message}")
         return None
     except Exception as e:
-        print(e)
+        print(f"Sorry, but there was an unexpected error. Please try again later. \nAdditional details: {e.message}")
         return None
 
 
@@ -116,6 +116,10 @@ def main():
 
         # get stock data from api
         stockData = getStockData(serv, ticker, timeSeries)
+        # check if stock data was returned, otherwise an error occurred,
+        # was printed, and we should continue to the next iteration or exit
+        if stockData == None:
+            continue
         
         if goAgain() == False:
             break
