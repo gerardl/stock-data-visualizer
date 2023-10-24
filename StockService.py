@@ -7,7 +7,7 @@ class StockService:
     def __init__(self, api_key):
         self.api_key = api_key
 
-    def __query_api(self, data_type, symbol):
+    def __query_api(self, data_type: str, symbol: str):
         url = "https://www.alphavantage.co/query?function={}&symbol={}&apikey={}".format(data_type, symbol, self.api_key)
         # time series intraday requires an interval parameter
         if data_type == "TIME_SERIES_INTRADAY":
@@ -17,12 +17,10 @@ class StockService:
         # ensure the request was successful
         if response.status_code != 200:
             raise StockQueryException("TODO: Add useful message here")
-        # parse the response as JSON
-        json_response = response.json()
         # check for json errors / no response?
         return response.json()
 
-    def __create_time_series(self, symbol: str, json_response, items_label) -> TimeSeries:
+    def __create_time_series(self, symbol: str, json_response, items_label: str) -> TimeSeries:
         """
         Create a TimeSeries instance from the JSON response from the API.
         """
