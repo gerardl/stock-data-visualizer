@@ -80,6 +80,15 @@ def getStockData(service: StockService, ticker: str, time_series: int, start_dat
             return service.get_weekly(ticker, start_date, end_date)
         elif time_series == 4:
             return service.get_monthly(ticker, start_date, end_date)
+    except StockQueryLimitException as e:
+        print(e)
+        return None
+    except StockQueryException as e:
+        print(e)
+        return None
+    except StockEndpointException as e:
+        print(e)
+        return None
     except Exception as e:
         print(e)
         return None
