@@ -115,7 +115,7 @@ def main():
             validDates = checkDates(startDate, endDate)
 
         # get stock data from api
-        stockData = getStockData(serv, ticker, timeSeries)
+        stockData = getStockData(serv, ticker, timeSeries, startDate, endDate)
         # check if stock data was returned, otherwise an error occurred,
         # was printed, and we should continue to the next iteration or exit
         if stockData == None:
