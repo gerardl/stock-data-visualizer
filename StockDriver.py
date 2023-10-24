@@ -1,4 +1,4 @@
-
+from StockService import StockService
 
 #get the Ticker Symbol
 def getTik():
@@ -50,6 +50,12 @@ def goAgain():
 
 def main():
     
+    #temp
+    ticker = "MSFT"
+    serv = StockService("demo")
+    result = serv.get_daily_data(ticker)
+    print(result)
+
     while True:
         ticker = getTik()
         chartType = getChartType()
