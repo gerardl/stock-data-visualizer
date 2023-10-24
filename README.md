@@ -4,7 +4,7 @@ Scrum Team 2: Alex Franklin, James Keating, Gerard Lucas, Tom O'Keefe, Jacob Tim
 
 ### To Install Dependencies
 
-pip install -r requirements.txt
+pip install -r requirements.txt --user
 
 ### Configure API Key
 
