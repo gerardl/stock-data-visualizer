@@ -9,9 +9,13 @@ class StockService:
 
     def __query_api(self, data_type: str, symbol: str):
         url = "https://www.alphavantage.co/query?function={}&symbol={}&apikey={}".format(data_type, symbol, self.api_key)
+        
         # time series intraday requires an interval parameter
         if data_type == "TIME_SERIES_INTRADAY":
             url += "&interval=5min"
+        # time series daily requires an outputsize parameter
+        elif data_type == "TIME_SERIES_DAILY":
+            url += "&outputsize=full"
         
         response = requests.get(url)
         # ensure the request was successful

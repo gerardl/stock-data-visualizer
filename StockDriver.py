@@ -63,8 +63,11 @@ def getStockData(service: StockService, ticker: str, time_series: int):
 
 def main():
     load_dotenv()
-    API_KEY = os.getenv("API_KEY")
-    serv = StockService(API_KEY)
+    serv = StockService(os.getenv("API_KEY"))
+
+    # temp for testing
+    temp_data = getStockData(serv, "AAPL", 2)
+    temp_filtered = temp_data.filter_date_range("2020-01-01", "2020-01-31")
 
     while True:
         ticker = getTik()
@@ -76,6 +79,7 @@ def main():
         # get stock data from api
         stockData = getStockData(serv, ticker, timeSeries)
         # filter to specified date range
+        # TODO: intra day filter is different than the others and needs some work
         filteredData = stockData.filter_date_range(startDate, endDate)
 
         if goAgain() == False:
