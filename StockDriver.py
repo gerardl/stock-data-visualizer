@@ -2,7 +2,9 @@ import datetime
 import os
 from dotenv import load_dotenv
 
+
 from StockService import StockService
+from StockChart import StockChart
 from Models import Stock, TimeSeries
 from StockExceptions import StockQueryException, StockQueryLimitException, StockEndpointException
 
@@ -101,7 +103,9 @@ def main():
     # Temp: Uncomment to test service without user input
     #temp_data = getStockData(serv, "AAPL", 2, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 12, 31))
     #temp_intra = getStockData(serv, "AAPL", 1, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 9, 28))
-    #temp_week = getStockData(serv, "AAPL", 3, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 12, 31))
+    temp_week = getStockData(serv, "AAPL", 3, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 12, 31))
+    chart_serv = StockChart()
+    chart_serv.graphData(1, temp_week)
     #temp_month = getStockData(serv, "AAPL", 4, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 12, 31))
 
     while True:
@@ -121,6 +125,9 @@ def main():
         if stockData == None:
             continue
         
+        
+
+
         if goAgain() == False:
             break
 
