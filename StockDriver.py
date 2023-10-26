@@ -99,15 +99,8 @@ def getStockData(service: StockService, ticker: str, time_series: int, start_dat
 def main():
     load_dotenv()
     serv = StockService(os.getenv("API_KEY"))
-
-    # Temp: Uncomment to test service without user input
-    #temp_data = getStockData(serv, "AAPL", 2, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 12, 31))
-    #temp_intra = getStockData(serv, "AAPL", 1, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 9, 28))
-    temp_week = getStockData(serv, "AAPL", 3, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 12, 31))
     chart_serv = StockChart()
-    chart_serv.graphData(1, temp_week)
-    #temp_month = getStockData(serv, "AAPL", 4, datetime.datetime(2020, 1, 1), datetime.datetime(2020, 12, 31))
-
+    
     while True:
         ticker = getTik()
         chartType = getChartType()
@@ -119,15 +112,17 @@ def main():
             validDates = checkDates(startDate, endDate)
 
         # get stock data from api
+        print(f"Getting data for {ticker} from {startDate} to {endDate} of series {timeSeries}...")
         stockData = getStockData(serv, ticker, timeSeries, startDate, endDate)
         # check if stock data was returned, otherwise an error occurred,
         # was printed, and we should continue to the next iteration or exit
-        if stockData == None:
+        print(stockData)
+        if stockData == None or stockData.series == None or len(stockData.series) == 0:
             continue
+        print('passed')
+        # graph the data
+        chart_serv.graphData(chartType, stockData)
         
-        
-
-
         if goAgain() == False:
             break
 
