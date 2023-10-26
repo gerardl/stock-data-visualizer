@@ -12,6 +12,8 @@ class StockService:
     WEEKLY_TYPE = "TIME_SERIES_WEEKLY"
     MONTHLY_TYPE = "TIME_SERIES_MONTHLY"
 
+    DEFAULT_OUTPUT_SIZE = "compact" #default outpuut size
+
     def __init__(self, api_key):
         self.api_key = api_key
 
@@ -19,7 +21,8 @@ class StockService:
         params = {
             "function": data_type,
             "symbol": symbol,
-            "apikey": self.api_key
+            "apikey": self.api_key,
+            "outputsize": self.DEFAULT_OUTPUT_SIZE  # added default ouput size
         }
         params.update(additional_params)
 
@@ -69,9 +72,10 @@ class StockService:
         return TimeSeries(symbol, self.INTRA_TYPE, start_date, end_date, series_data)
 
     def get_daily(self, symbol: str, start_date: datetime, end_date: datetime) -> TimeSeries:
-        res = self.__query_api(self.DAILY_TYPE, symbol, {"outputsize": "full"})
+        res = self.__query_api(self.DAILY_TYPE, symbol, {"outputsize": StockService.DEFAULT_OUTPUT_SIZE})
         series_data = self.__create_series_data(symbol, res, 'Time Series (Daily)')
         return TimeSeries(symbol, self.DAILY_TYPE, start_date, end_date, series_data)
+
     
     def get_weekly(self, symbol: str, start_date: datetime, end_date: datetime) -> TimeSeries:
         res = self.__query_api(self.WEEKLY_TYPE, symbol)
