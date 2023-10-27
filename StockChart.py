@@ -5,8 +5,10 @@ from Utility import Utility
 from Models import Stock, TimeSeries
 
 class StockChart:
+    DEFAULT_ROTATION = 35
+
     def graphData(self, chartType, time_series: TimeSeries):
-        chart = pygal.Line(x_label_rotation=35) if chartType == 2 else pygal.Bar(x_label_rotation=35)
+        chart = pygal.Line(x_label_rotation=self.DEFAULT_ROTATION) if chartType == 2 else pygal.Bar(x_label_rotation=self.DEFAULT_ROTATION)
         chart.title = f'Stock Data for {time_series.symbol}: {time_series.start_date} to {time_series.end_date}'
         time_series.series.reverse()
         chart.x_labels = [stock.date for stock in time_series.series]

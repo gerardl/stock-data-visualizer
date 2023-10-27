@@ -2,7 +2,6 @@ import datetime
 import os
 from dotenv import load_dotenv
 
-
 from StockService import StockService
 from StockChart import StockChart
 from Models import Stock, TimeSeries
@@ -41,20 +40,39 @@ def getTimeSeries():
         print("invalid option, try again. ")
 
 def getStartDate():
-    print("Enter the Start Date (YYYY-MM-DD)")
-    dStr = input()
-    d = x = datetime.datetime(int(dStr[0:4]), int(dStr[5:7]), int(dStr[8:10]))
-    return d
+    try:
+        print("Enter the Start Date (YYYY-MM-DD)")
+        dStr = input()
+        d = x = datetime.datetime(int(dStr[0:4]), int(dStr[5:7]), int(dStr[8:10]))
+        return d
+    except ValueError:
+        print("Invalid Date. Try again.")
+        return getStartDate()
 
 def getEndDate():
-    print("Enter the End Date (YYYY-MM-DD)")
-    dStr = input()
-    d = x = datetime.datetime(int(dStr[0:4]), int(dStr[5:7]), int(dStr[8:10]))
-    return d
+    try:
+        print("Enter the End Date (YYYY-MM-DD)")
+        dStr = input()
+        d = x = datetime.datetime(int(dStr[0:4]), int(dStr[5:7]), int(dStr[8:10]))
+        return d
+    except ValueError:
+        print("Invalid Date. Try again.")
+        return getEndDate()
 
 
 def checkDates(sd, ed, ts):
-    #if()
+    # ensure that intraday is only 30 days max
+    if ts == 1:
+        if sd < ed:
+            if sd + datetime.timedelta(days=30) < ed:
+                print("Intraday data is limited to 30 days")
+                return False
+            else:
+                return True
+        else:
+            print("End Date must be after Start Date")
+            return False
+    # ensure that the start date is before the end date
     if sd > ed:
         print("End Date must be after Start Date")
         return False
@@ -69,8 +87,6 @@ def goAgain():
         return True
     else:
         return False
-    
-
 
 def getStockData(service: StockService, ticker: str, time_series: int, start_date: datetime, end_date: datetime):
     try:
@@ -112,14 +128,11 @@ def main():
             validDates = checkDates(startDate, endDate, timeSeries)
 
         # get stock data from api
-        print(f"Getting data for {ticker} from {startDate} to {endDate} of series {timeSeries}...")
         stockData = getStockData(serv, ticker, timeSeries, startDate, endDate)
         # check if stock data was returned, otherwise an error occurred,
         # was printed, and we should continue to the next iteration or exit
-        print(stockData)
         if stockData == None or stockData.series == None or len(stockData.series) == 0:
             continue
-        print('passed')
         # graph the data
         chart_serv.graphData(chartType, stockData)
         
