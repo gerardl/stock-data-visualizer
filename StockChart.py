@@ -1,7 +1,6 @@
 import pygal
-from datetime import datetime, timedelta
+from datetime import datetime
 import lxml
-from Utility import Utility
 from Models import Stock, TimeSeries
 
 class StockChart:

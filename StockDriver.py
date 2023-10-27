@@ -1,11 +1,9 @@
 import datetime
-import os
-from dotenv import load_dotenv
-
 from StockService import StockService
 from StockChart import StockChart
-from Models import Stock, TimeSeries
 from StockExceptions import StockQueryException, StockQueryLimitException, StockEndpointException
+
+API_KEY = "SV7DD9W1DE9D97RZ"
 
 #get the Ticker Symbol
 def getTik():
@@ -123,8 +121,7 @@ def getStockData(service: StockService, ticker: str, time_series: int, start_dat
 
 def main():
     try:
-        load_dotenv()
-        serv = StockService(os.getenv("API_KEY"))
+        serv = StockService(API_KEY)
         chart_serv = StockChart()
         
         while True:
