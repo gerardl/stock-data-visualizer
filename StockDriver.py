@@ -152,6 +152,7 @@ def main():
             chart_serv.graphData(chartType, stockData)
             
             if goAgain() == False:
+                print("Thank you and Goodbye!")
                 break
     except Exception as e:
         print(f"Sorry, but there was an unexpected error. Please try again later. \nAdditional details: {e.message}")
