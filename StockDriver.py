@@ -17,12 +17,22 @@ def getChartType():
     while True:
         print("Chart Types:")
         print("------------")
-        print("1. Bar ")
-        print("2. Line ")
-        t = int(input())
-        if t == 1 or t == 2:
-            return t
-        print("invalid option, try again. ")
+        print("1. Bar")
+        print("2. Line")
+        print("Enter the chart type option (1 or 2):")
+
+        user_input = input() 
+
+        if user_input.isdigit():
+            t = int(user_input)
+            if t in [1, 2]:
+                return t
+
+        print("Invalid option, try again.")
+
+selected_chart_type = getChartType()
+print(f"You selected option {selected_chart_type}")
+
 
 #get the time series
 def getTimeSeries():
