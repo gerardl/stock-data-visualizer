@@ -2,12 +2,10 @@ import datetime
 import os
 from dotenv import load_dotenv
 
-
 from StockService import StockService
 from StockChart import StockChart
 from Models import Stock, TimeSeries
 from StockExceptions import StockQueryException, StockQueryLimitException, StockEndpointException
-
 
 #get the Ticker Symbol
 def getTik():
@@ -19,12 +17,18 @@ def getChartType():
     while True:
         print("Chart Types:")
         print("------------")
-        print("1. Bar ")
-        print("2. Line ")
-        t = int(input())
-        if t == 1 or t == 2:
-            return t
-        print("invalid option, try again. ")
+        print("1. Bar")
+        print("2. Line")
+        print("Enter the chart type option (1 or 2):")
+
+        user_input = input() 
+
+        if user_input.isdigit():
+            t = int(user_input)
+            if t in [1, 2]:
+                return t
+
+        print("Invalid option, try again.")
 
 #get the time series
 def getTimeSeries():
@@ -36,31 +40,55 @@ def getTimeSeries():
         print("3. Weekly")
         print("4. Monthly")
         print("Enter the Time series option (1, 2, 3, 4)")
-        ts = int(input())
-        if ts == 1 or ts == 2 or ts ==3 or ts == 4:
-            return ts
-        print("invalid option, try again. ")
+
+        try: 
+            ts = int(input())
+            if ts in [1, 2, 3, 4]:  
+                return ts 
+            else:
+                print("Invalid option, try again.")
+        except ValueError: 
+            print("Invalid input, please enter a number between 1 and 4.")
 
 def getStartDate():
-    print("Enter the Start Date (YYYY-MM-DD)")
-    dStr = input()
-    d = x = datetime.datetime(int(dStr[0:4]), int(dStr[5:7]), int(dStr[8:10]))
-    return d
+    try:
+        print("Enter the Start Date (YYYY-MM-DD)")
+        dStr = input()
+        d = x = datetime.datetime(int(dStr[0:4]), int(dStr[5:7]), int(dStr[8:10]))
+        return d
+    except ValueError:
+        print("Invalid Date. Try again.")
+        return getStartDate()
 
 def getEndDate():
-    print("Enter the End Date (YYYY-MM-DD)")
-    dStr = input()
-    d = x = datetime.datetime(int(dStr[0:4]), int(dStr[5:7]), int(dStr[8:10]))
-    return d
+    try:
+        print("Enter the End Date (YYYY-MM-DD)")
+        dStr = input()
+        d = x = datetime.datetime(int(dStr[0:4]), int(dStr[5:7]), int(dStr[8:10]))
+        return d
+    except ValueError:
+        print("Invalid Date. Try again.")
+        return getEndDate()
 
 
-def checkDates(sd, ed):
+def checkDates(sd, ed, ts):
+    # ensure that intraday is only 30 days max
+    if ts == 1:
+        if sd < ed:
+            if sd + datetime.timedelta(days=30) < ed:
+                print("Due to insufficient API access, Intraday data can only be generated for a maximum of 30 days.")
+                return False
+            else:
+                return True
+        else:
+            print("End Date must be after Start Date")
+            return False
+    # ensure that the start date is before the end date
     if sd > ed:
         print("End Date must be after Start Date")
         return False
     else:
         return True
-
 
 def goAgain():
     print("Would you like to view more stock Data?(y/n):")
@@ -69,8 +97,6 @@ def goAgain():
         return True
     else:
         return False
-    
-
 
 def getStockData(service: StockService, ticker: str, time_series: int, start_date: datetime, end_date: datetime):
     try:
@@ -95,36 +121,36 @@ def getStockData(service: StockService, ticker: str, time_series: int, start_dat
         print(f"Sorry, but there was an unexpected error. Please try again later. \nAdditional details: {e.message}")
         return None
 
-
 def main():
-    load_dotenv()
-    serv = StockService(os.getenv("API_KEY"))
-    chart_serv = StockChart()
-    
-    while True:
-        ticker = getTik()
-        chartType = getChartType()
-        timeSeries = getTimeSeries()
-        validDates = False
-        while(validDates == False):
-            startDate = getStartDate()
-            endDate = getEndDate()
-            validDates = checkDates(startDate, endDate)
-
-        # get stock data from api
-        print(f"Getting data for {ticker} from {startDate} to {endDate} of series {timeSeries}...")
-        stockData = getStockData(serv, ticker, timeSeries, startDate, endDate)
-        # check if stock data was returned, otherwise an error occurred,
-        # was printed, and we should continue to the next iteration or exit
-        print(stockData)
-        if stockData == None or stockData.series == None or len(stockData.series) == 0:
-            continue
-        print('passed')
-        # graph the data
-        chart_serv.graphData(chartType, stockData)
+    try:
+        load_dotenv()
+        serv = StockService(os.getenv("API_KEY"))
+        chart_serv = StockChart()
         
-        if goAgain() == False:
-            break
+        while True:
+            ticker = getTik()
+            chartType = getChartType()
+            timeSeries = getTimeSeries()
+            validDates = False
+            while(validDates == False):
+                startDate = getStartDate()
+                endDate = getEndDate()
+                validDates = checkDates(startDate, endDate, timeSeries)
 
-if __name__ == "__main__":     
+            # get stock data from api
+            stockData = getStockData(serv, ticker, timeSeries, startDate, endDate)
+            # check if stock data was returned, otherwise an error occurred,
+            # was printed, and we should continue to the next iteration or exit
+            if stockData == None or stockData.series == None or len(stockData.series) == 0:
+                continue
+            # graph the data
+            chart_serv.graphData(chartType, stockData)
+            
+            if goAgain() == False:
+                break
+    except Exception as e:
+        print(f"Sorry, but there was an unexpected error. Please try again later. \nAdditional details: {e.message}")
+        exit()
+
+if __name__ == "__main__":
     main()
