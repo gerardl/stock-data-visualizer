@@ -30,10 +30,6 @@ def getChartType():
 
         print("Invalid option, try again.")
 
-selected_chart_type = getChartType()
-print(f"You selected option {selected_chart_type}")
-
-
 #get the time series
 def getTimeSeries():
     while True:
@@ -53,9 +49,6 @@ def getTimeSeries():
                 print("Invalid option, try again.")
         except ValueError: 
             print("Invalid input, please enter a number between 1 and 4.")
-selected_time_series = getTimeSeries()
-print(f"You selected option {selected_time_series}")
-
 
 def getStartDate():
     try:
@@ -97,7 +90,6 @@ def checkDates(sd, ed, ts):
     else:
         return True
 
-
 def goAgain():
     print("Would you like to view more stock Data?(y/n):")
     a = input()
@@ -128,7 +120,6 @@ def getStockData(service: StockService, ticker: str, time_series: int, start_dat
     except Exception as e:
         print(f"Sorry, but there was an unexpected error. Please try again later. \nAdditional details: {e.message}")
         return None
-
 
 def main():
     try:
@@ -161,5 +152,5 @@ def main():
         print(f"Sorry, but there was an unexpected error. Please try again later. \nAdditional details: {e.message}")
         exit()
 
-if __name__ == "__main__":     
+if __name__ == "__main__":
     main()
