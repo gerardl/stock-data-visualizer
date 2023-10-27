@@ -141,12 +141,18 @@ def main():
             stockData = getStockData(serv, ticker, timeSeries, startDate, endDate)
             # check if stock data was returned, otherwise an error occurred,
             # was printed, and we should continue to the next iteration or exit
-            if stockData == None or stockData.series == None or len(stockData.series) == 0:
+            if stockData == None or stockData.series == None:
                 continue
-            # graph the data
+            # got a response but no time series data was returned
+            if len(stockData.series) == 0:
+                print("No data was returned for the specified date range. Please try again with a different date range and/or stock.")
+                continue
+            
+            # graph the data & display in browser
             chart_serv.graphData(chartType, stockData)
             
             if goAgain() == False:
+                print("Thank you and Goodbye!")
                 break
     except Exception as e:
         print(f"Sorry, but there was an unexpected error. Please try again later. \nAdditional details: {e.message}")

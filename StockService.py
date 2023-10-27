@@ -11,8 +11,9 @@ class StockService:
     DAILY_TYPE = "TIME_SERIES_DAILY"
     WEEKLY_TYPE = "TIME_SERIES_WEEKLY"
     MONTHLY_TYPE = "TIME_SERIES_MONTHLY"
+    INTRA_TIME_INTERVAL = "60min" #interval for intraday
 
-    DEFAULT_OUTPUT_SIZE = "compact" #default outpuut size
+    DEFAULT_OUTPUT_SIZE = "full" #default output size
 
     def __init__(self, api_key):
         self.api_key = api_key
@@ -65,14 +66,13 @@ class StockService:
         months = Utility.get_months_between(start_date, end_date)
         series_data = []
         for month in months:
-            # TODO: decide what interval we want to use for intraday
-            res = self.__query_api(self.INTRA_TYPE, symbol, {"outputsize": "full", "month": month.strftime('%Y-%m'), "interval": "60min"})
+            res = self.__query_api(self.INTRA_TYPE, symbol, {"month": month.strftime('%Y-%m'), "interval": self.INTRA_TIME_INTERVAL})
             series_data += self.__create_series_data(symbol, res, 'Time Series (60min)')
 
         return TimeSeries(symbol, self.INTRA_TYPE, start_date, end_date, series_data)
 
     def get_daily(self, symbol: str, start_date: datetime, end_date: datetime) -> TimeSeries:
-        res = self.__query_api(self.DAILY_TYPE, symbol, {"outputsize": StockService.DEFAULT_OUTPUT_SIZE})
+        res = self.__query_api(self.DAILY_TYPE, symbol)
         series_data = self.__create_series_data(symbol, res, 'Time Series (Daily)')
         return TimeSeries(symbol, self.DAILY_TYPE, start_date, end_date, series_data)
 
