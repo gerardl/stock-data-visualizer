@@ -8,7 +8,6 @@ from StockChart import StockChart
 from Models import Stock, TimeSeries
 from StockExceptions import StockQueryException, StockQueryLimitException, StockEndpointException
 
-
 #get the Ticker Symbol
 def getTik():
     print("Enter the stock symbol you are looking for: ")
@@ -54,7 +53,8 @@ def getEndDate():
     return d
 
 
-def checkDates(sd, ed):
+def checkDates(sd, ed, ts):
+    #if()
     if sd > ed:
         print("End Date must be after Start Date")
         return False
@@ -109,7 +109,7 @@ def main():
         while(validDates == False):
             startDate = getStartDate()
             endDate = getEndDate()
-            validDates = checkDates(startDate, endDate)
+            validDates = checkDates(startDate, endDate, timeSeries)
 
         # get stock data from api
         print(f"Getting data for {ticker} from {startDate} to {endDate} of series {timeSeries}...")
