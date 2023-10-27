@@ -34,10 +34,18 @@ def getTimeSeries():
         print("3. Weekly")
         print("4. Monthly")
         print("Enter the Time series option (1, 2, 3, 4)")
-        ts = int(input())
-        if ts == 1 or ts == 2 or ts ==3 or ts == 4:
-            return ts
-        print("invalid option, try again. ")
+
+        try: 
+            ts = int(input())
+            if ts in [1, 2, 3, 4]:  
+                return ts 
+            else:
+                print("Invalid option, try again.")
+        except ValueError: 
+            print("Invalid input, please enter a number between 1 and 4.")
+selected_time_series = getTimeSeries()
+print(f"You selected option {selected_time_series}")
+
 
 def getStartDate():
     try:
