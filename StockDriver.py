@@ -1,9 +1,6 @@
 import datetime
-import os
-
 from StockService import StockService
 from StockChart import StockChart
-from Models import Stock, TimeSeries
 from StockExceptions import StockQueryException, StockQueryLimitException, StockEndpointException
 
 API_KEY = "SV7DD9W1DE9D97RZ"
