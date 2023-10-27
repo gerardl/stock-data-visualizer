@@ -65,7 +65,7 @@ def checkDates(sd, ed, ts):
     if ts == 1:
         if sd < ed:
             if sd + datetime.timedelta(days=30) < ed:
-                print("Intraday data is limited to 30 days")
+                print("Due to insufficient API access, Intraday data can only be generated for a maximum of 30 days.")
                 return False
             else:
                 return True
@@ -113,31 +113,35 @@ def getStockData(service: StockService, ticker: str, time_series: int, start_dat
 
 
 def main():
-    load_dotenv()
-    serv = StockService(os.getenv("API_KEY"))
-    chart_serv = StockChart()
-    
-    while True:
-        ticker = getTik()
-        chartType = getChartType()
-        timeSeries = getTimeSeries()
-        validDates = False
-        while(validDates == False):
-            startDate = getStartDate()
-            endDate = getEndDate()
-            validDates = checkDates(startDate, endDate, timeSeries)
-
-        # get stock data from api
-        stockData = getStockData(serv, ticker, timeSeries, startDate, endDate)
-        # check if stock data was returned, otherwise an error occurred,
-        # was printed, and we should continue to the next iteration or exit
-        if stockData == None or stockData.series == None or len(stockData.series) == 0:
-            continue
-        # graph the data
-        chart_serv.graphData(chartType, stockData)
+    try:
+        load_dotenv()
+        serv = StockService(os.getenv("API_KEY"))
+        chart_serv = StockChart()
         
-        if goAgain() == False:
-            break
+        while True:
+            ticker = getTik()
+            chartType = getChartType()
+            timeSeries = getTimeSeries()
+            validDates = False
+            while(validDates == False):
+                startDate = getStartDate()
+                endDate = getEndDate()
+                validDates = checkDates(startDate, endDate, timeSeries)
+
+            # get stock data from api
+            stockData = getStockData(serv, ticker, timeSeries, startDate, endDate)
+            # check if stock data was returned, otherwise an error occurred,
+            # was printed, and we should continue to the next iteration or exit
+            if stockData == None or stockData.series == None or len(stockData.series) == 0:
+                continue
+            # graph the data
+            chart_serv.graphData(chartType, stockData)
+            
+            if goAgain() == False:
+                break
+    except Exception as e:
+        print(f"Sorry, but there was an unexpected error. Please try again later. \nAdditional details: {e.message}")
+        exit()
 
 if __name__ == "__main__":     
     main()
